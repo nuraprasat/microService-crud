@@ -4,8 +4,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -31,7 +34,8 @@ import com.service.service.UserInformationService;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ControllerRestTest {
-
+	
+	public static final MediaType APPLICATION_JSON_UTF8 = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
 
 	private MockMvc mockMvc;
 	
@@ -87,11 +91,28 @@ public class ControllerRestTest {
 														.andReturn();
 	}
 	
-/*	@Test(expected=UserInformationNotFoundException.class)
-	public void ErrorModelShouldBeReturnedFromService() throws Exception {
-		Mockito.when(interService.getAllUserBalance()).thenReturn(null);
-		interController.getAllUserBalance();
-	}*/
+	@Test
+	public void checkPatchUserWorking() throws Exception {
+		Mockito.when(userInformationService.updateUser(Mockito.anyString(), Mockito.anyInt())).thenReturn(getListOfProduct().get(0));
+		MvcResult result = this.mockMvc.perform(patch("/updateUser/{id}",1).param("email", "bcd@xyz.com").accept(MediaType.APPLICATION_JSON_VALUE))
+														.andExpect(status().is(200))
+														.andReturn();
+		ObjectMapper mapper = new ObjectMapper();
+		UserInformation proList = mapper.readValue(result.getResponse().getContentAsString(), UserInformation.class);
+		assertNotNull(proList);
+		assertEquals(getListOfProduct().get(0).getEmail(), "abc@abc.com");
+	}
+	
+	@Test
+	public void checkPostCreateUserWorking() throws Exception {
+		Mockito.when(userInformationService.updateUser(Mockito.any(UserInformation.class), Mockito.anyInt())).thenReturn(null);
+		this.mockMvc.perform(put("/updateUser/{id}",1)
+														.contentType(APPLICATION_JSON_UTF8)
+														.content(getListOfProduct().get(0).toString()))
+														.andExpect(status().is(400))
+														.andReturn();
+		Mockito.verify(userInformationService, Mockito.times(1)).updateUser(Mockito.anyString(), Mockito.anyInt());
+	}
 	
 	private Optional<UserInformation> optionalUserInformation() {
 		Optional<UserInformation> optionalUserInformation = null;
@@ -125,7 +146,6 @@ public class ControllerRestTest {
 		bankDetails.setAccountNumber("123abc");
 		bankDetails.setBalance(120.0);
 		bankDetails.setBankName("icici");
-		bankDetails.setId(1);
 		list.add(bankDetails);
 		list.add(bankDetails);
 		return list;

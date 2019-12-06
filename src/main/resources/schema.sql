@@ -14,8 +14,8 @@ CREATE TABLE bank_details (
     bank_name VARCHAR(128),
     account_number VARCHAR(128) NOT NULL,
     balance double NOT NULL,
-    fk_user_id INTEGER ,
-    foreign key (fk_user_id) references user_information(user_id),
+    user_id INTEGER ,
+    foreign key (user_id) references user_information(user_id),
     
     PRIMARY KEY (id)
 );
