@@ -11,10 +11,11 @@ CREATE TABLE user_information (
 
 CREATE TABLE bank_details (
     id INTEGER NOT NULL AUTO_INCREMENT,
-    bank_name VARCHAR(128) NOT NULL,
+    bank_name VARCHAR(128),
     account_number VARCHAR(128) NOT NULL,
-    user_id INTEGER ,
-    foreign key (user_id) references user_information(user_id),
+    balance double NOT NULL,
+    fk_user_id INTEGER ,
+    foreign key (fk_user_id) references user_information(user_id),
     
     PRIMARY KEY (id)
 );

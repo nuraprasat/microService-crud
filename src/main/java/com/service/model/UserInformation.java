@@ -2,7 +2,9 @@ package com.service.model;
 
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -23,7 +25,8 @@ public class UserInformation {
 	private String address;
 	private String phoneNumber;
 	
-	@OneToMany(mappedBy="userInformation")
-    private List<BankDetails> bankDetails;
-
+	@OneToMany(mappedBy = "userInformation", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval=true)
+	private List<BankDetails> bankDetails;
+	
+	private transient ErrorModel errorModel;
 }
